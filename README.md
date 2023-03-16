@@ -1,14 +1,10 @@
 # Fusion2Pybullet
 
-Archive Note: I will no longer sutdy and work in Robitics. Please fork and develop on your needs.
-
-[简体中文](README.zh.md) | English
-
 Developed from [@syuntoku14/fusion2urdf](https://github.com/syuntoku14/fusion2urdf). 
 
 ### What is this script?
 
-A Fusion 360 script to export urdf files. This is a PyBullet adpative version. 
+A Fusion 360 script to export URDF files. This is a PyBullet adpative version. Compared to [@yanshil/Fusion2PyBullet](https://github.com/yanshil/Fusion2PyBullet), this version supports both "Capture History" and "Direct Design", does not create extra geometry in the Fusion model, and does not require flattening the model tree.
 
 Note: Only support "Revolute", "Rigid" and "Slider" joint currently. Also I don't have plans to work on rigid group and other types of joints.
 
@@ -19,17 +15,6 @@ This exports:
 * A example hello.py to load your model into PyBullet.
 
 ---
-
-03/03/2021: Pull the fix for xyz calculation from 01/09/2021 commit `d2e754086f092ac81c481a0c3862e3cecb1f4dfe` in [syuntoku14/fusion2urdf](https://github.com/syuntoku14/fusion2urdf/commit/d2e754086f092ac81c481a0c3862e3cecb1f4dfe)
-
-- If you see that your components move arround the map center in rviz try this update
-- More Infos see [this link](https://forums.autodesk.com/t5/fusion-360-api-and-scripts/difference-of-geometryororiginone-and-geometryororiginonetwo/m-p/9837767)
-
-03/27/2020 update2: Add a supplementary script **Joint2Graphviz** to check assembled structures.
-
-03/27/2020 update: Add "Do not Capture Design History" to fix InternalValidationError. See [Developer Notes](https://github.com/yanshil/Fusion2Pyblluet/wiki/Developer-Notes)
-
-**03/25/2020: Supporting exportation of nested components.**
 
 
 ### Fusion Add-in
