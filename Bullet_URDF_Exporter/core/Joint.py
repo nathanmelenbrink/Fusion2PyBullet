@@ -122,11 +122,14 @@ def make_joints_dict(root, msg):
 
     joints_dict = {}
     
+
     ## Root joints
     for joint in root.joints:
         joint_dict = get_joint_dict(joint)
         if type(joint_dict) is dict:
             key = utils.get_valid_filename(joint.name)
+            #key = key[:-1] ## Will generate an extra "1" in the end, remove it
+            #print("Export file: {}".format(key))
             joints_dict[key] = joint_dict
         else: ## Error happens and throw an msg
             msg = joint_dict
@@ -141,10 +144,14 @@ def make_joints_dict(root, msg):
 
 
 ## TODO: Make msg more accurate and elegent
-def traverseAssembly(occurrences, currentLevel, joints_dict={}, msg='Successfully create URDF file'):
+def traverseAssembly(occurrences, currentLevel, joints_dict={}, msg='Successfully created URDF file'):
     
     for i in range(0, occurrences.count):
         occ = occurrences.item(i)
+        # app = adsk.core.Application.get()
+        # ui = app.userInterface
+        # ui.messageBox(" %s"
+        # % (occ), "Joint XML")
 
         if occ.component.joints.count > 0:
             for joint in occ.component.joints:
@@ -156,7 +163,7 @@ def traverseAssembly(occurrences, currentLevel, joints_dict={}, msg='Successfull
                 else: ## Error happens and throw an msg
                     msg = joint_dict
                 # tmp_joints_dict, msg = make_joints_dict(ass_joint, msg)
-                if msg != 'Successfully create URDF file':
+                if msg != 'Successfully created URDF file':
                     print('Check Component: ' + comp.name + '\t Joint: ' + joint.name)
                     return 0
 
@@ -174,14 +181,14 @@ def traverseAssembly(occurrences, currentLevel, joints_dict={}, msg='Successfull
 
 def get_joint_dict(joint):
     joint_type_list = [
-    'fixed', 'revolute', 'prismatic', 'Cylinderical',
+    'fixed', 'revolute', 'prismatic', 'Cylindrical',
     'PinSlot', 'Planner', 'Ball']  # these are the names in urdf
     
     joint_dict = {}
     joint_type = joint_type_list[joint.jointMotion.jointType]
     joint_dict['type'] = joint_type
     
-    # swhich by the type of the joint
+    # switch by the type of the joint
     joint_dict['axis'] = [0, 0, 0]
     joint_dict['upper_limit'] = 0.0
     joint_dict['lower_limit'] = 0.0
@@ -202,7 +209,7 @@ def get_joint_dict(joint):
             msg = joint.name + 'is not set its upper limit. Please set it and try again.'
             return msg
         else:  # if there is no angle limit
-            joint_dict['type'] = 'continuous'
+            joint_dict['type'] = 'revolute'
             
     elif joint_type == 'prismatic':
         joint_dict['axis'] = [round(i, 6) for i in \
@@ -221,8 +228,8 @@ def get_joint_dict(joint):
     elif joint_type == 'fixed':
         pass
     
-    if joint.occurrenceTwo.component.name == 'base_link':
-        joint_dict['parent'] = 'base_link'
+    if joint.occurrenceTwo.component.name == 'base_link' or joint.occurrenceTwo.component.name == 'base_link1':
+        joint_dict['parent'] = 'base_link1'
     else:  
         joint_dict['parent'] = utils.get_valid_filename(joint.occurrenceTwo.fullPathName)
     joint_dict['child'] = utils.get_valid_filename(joint.occurrenceOne.fullPathName)

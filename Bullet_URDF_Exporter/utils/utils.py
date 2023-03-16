@@ -25,7 +25,7 @@ def get_valid_filename(s):
     s = str(s).strip().replace(' ', '_')
     return re.sub(r'(?u)[^-\w.]', '', s)
 
-
+## this function is no longer called. I'm not sure why it was needed
 def copy_occs(root):    
     """    
     duplicate all the components
@@ -71,7 +71,7 @@ def copy_occs(root):
 
 def export_stl(design, save_dir, components):  
     """
-    export stl files into "sace_dir/"
+    export stl files into "save_dir/"
     
     
     Parameters
@@ -87,22 +87,37 @@ def export_stl(design, save_dir, components):
     # get the script location
     try: os.mkdir(save_dir + '/meshes')
     except: pass
-    scriptDir = save_dir + '/meshes'  
+    scriptDir = save_dir + '/meshes' 
+    root = design.rootComponent 
     # export the occurrence one by one in the component to a specified file
     for component in components:
-        allOccus = component.allOccurrences
-        for occ in allOccus:
-            ## Don't export nested component
-            if occ.childOccurrences.count > 0:
-                continue
+        app = adsk.core.Application.get()
+        ui = app.userInterface
 
-            if 'old_component' not in occ.component.name:
-                try:
-                    key = get_valid_filename(occ.fullPathName)
-                    key = key[:-1] ## Will generate an extra "1" in the end, remove it
-                    print("Export file: {}".format(key))
-                    # fileName = scriptDir + "/" + occ.component.name
-                    fileName = scriptDir + "/" + key
+        # ui.messageBox(" %s"
+        # % (component.name), "Component")
+        if component == root:
+            allOccus = component.allOccurrences
+            for occ in allOccus:
+                key = get_valid_filename(occ.fullPathName)
+                fileName = scriptDir + "/" + key
+                if occ.childOccurrences.count > 0:
+                    # export just the bodies from the occurrence
+                    # by turning off visibility for components
+                    for child in occ.childOccurrences:
+                        child.isLightBulbOn = False
+                    stlExportOptions = exportMgr.createSTLExportOptions(occ.component, fileName)
+                    stlExportOptions.sendToPrintUtility = False
+                    stlExportOptions.isBinaryFormat = True
+                    # options are .MeshRefinementLow .MeshRefinementMedium .MeshRefinementHigh
+                    stlExportOptions.meshRefinement = adsk.fusion.MeshRefinementSettings.MeshRefinementLow
+                    exportMgr.execute(stlExportOptions)
+                    for child in occ.childOccurrences:
+                        child.isLightBulbOn = True
+                    continue
+                #ui.messageBox(" %s"
+                #% (occ.fullPathName), "Occurrence")
+                try: 
                     # create stl exportOptions
                     stlExportOptions = exportMgr.createSTLExportOptions(occ, fileName)
                     stlExportOptions.sendToPrintUtility = False
@@ -111,8 +126,8 @@ def export_stl(design, save_dir, components):
                     stlExportOptions.meshRefinement = adsk.fusion.MeshRefinementSettings.MeshRefinementLow
                     exportMgr.execute(stlExportOptions)
                 except:
-                    print('Component ' + occ.component.name + ' has something wrong.')
-                
+                    if ui:
+                        ui.messageBox('Failed:\n{}'.format(traceback.format_exc()))
 
 def file_dialog(ui):     
     """

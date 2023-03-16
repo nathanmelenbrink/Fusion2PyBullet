@@ -24,9 +24,9 @@ from .core import Link, Joint, Write
 
 def run(context):
     ui = None
-    success_msg = 'Successfully create URDF file'
+    success_msg = 'Successfully created URDF file'
     msg = success_msg
-    
+
     try:
         # --------------------
         # initialize
@@ -56,7 +56,7 @@ def run(context):
         except: pass
         
         ## Set "Do not capture design history"
-        design.designType = adsk.fusion.DesignTypes.DirectDesignType
+        #design.designType = adsk.fusion.DesignTypes.DirectDesignType
         
         # --------------------
         # set dictionaries
@@ -85,7 +85,7 @@ def run(context):
         Write.write_hello_pybullet(robot_name, save_dir)
         
         # Generate STl files        
-        utils.copy_occs(root)
+        # utils.copy_occs(root)
         utils.export_stl(design, save_dir, components)   
         
         ui.messageBox(msg, title)

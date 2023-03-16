@@ -36,7 +36,7 @@ def write_link_urdf(joints_dict, repo, links_xyz_dict, file_name, inertial_dict)
     with open(file_name, mode='a') as f:
         # for base_link
         center_of_mass = inertial_dict['base_link']['center_of_mass']
-        link = Link.Link(name='base_link', xyz=[0,0,0], 
+        link = Link.Link(name='base_link1', xyz=[0,0,0], 
             center_of_mass=center_of_mass, repo=repo,
             mass=inertial_dict['base_link']['mass'],
             inertia_tensor=inertial_dict['base_link']['inertia'])
@@ -100,10 +100,10 @@ to swap component1<=>component2"
             axis=joints_dict[j]['axis'], parent=parent, child=child, \
             upper_limit=upper_limit, lower_limit=lower_limit)
             joint.make_joint_xml()
-            joint.make_transmission_xml()
+            #joint.make_transmission_xml()
             f.write(joint.joint_xml)
-            if joint_type != 'fixed':
-                f.write(joint.tran_xml)
+            # if joint_type != 'fixed':
+            #     f.write(joint.tran_xml)
             f.write('\n')
 
 
@@ -160,4 +160,3 @@ p.disconnect()
     with open(file_name, mode='w') as f:
         f.write(hello_pybullet)
         f.write('\n')
-
